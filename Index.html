@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indicador de Tendências</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            text-align: center;
+        }
+        #trend {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Indicador de Tendências de Mercado</h1>
+    <button id="checkTrend">Verificar Tendência</button>
+    <div id="trend">Clique no botão para verificar a tendência</div>
+
+    <script>
+        document.getElementById('checkTrend').addEventListener('click', function() {
+            // Simulação de coleta de dados da API
+            // Normalmente, aqui você faria uma requisição HTTP para a API e processaria a resposta
+            let buyOrders = 72; // Simulação de ordens de compra
+            let sellOrders = 28; // Simulação de ordens de venda
+
+            let trendIndicator = document.getElementById('trend');
+
+            if (buyOrders > sellOrders) {
+                trendIndicator.textContent = "Tendência de Alta 🚀";
+                trendIndicator.style.color = "green";
+            } else {
+                trendIndicator.textContent = "Tendência de Baixa 📉";
+                trendIndicator.style.color = "red";
+            }
+        });
+    </script>
+</body>
+</html>
