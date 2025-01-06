@@ -1,37 +1,193 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Indicador de Tendências</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 50px;
-            text-align: center;
-        }
-        #trend {
-            font-size: 24px;
-            margin-top: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Produtos</title>
+  <style>
+    /* Estilos gerais */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    form {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 500px;
+    }
+    input {
+      padding: 10px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 1em;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Estilo para a lista de produtos */
+    ul {
+      list-style: none;
+      padding: 0;
+      width: 100%;
+      max-width: 500px;
+    }
+    li {
+      background: #fff;
+      margin-bottom: 10px;
+      padding: 10px 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .delete-btn, .edit-btn {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    .edit-btn {
+      background-color: #28a745;
+    }
+    .delete-btn:hover {
+      background-color: #a71d2a;
+    }
+    .edit-btn:hover {
+      background-color: #218838;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      form {
+        width: 100%;
+      }
+
+      ul {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      li {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .delete-btn, .edit-btn {
+        margin-top: 10px;
+        width: 100%;
+        text-align: center;
+      }
+
+      /* Reduzir o tamanho dos botões em dispositivos móveis */
+      .delete-btn, .edit-btn {
+        padding: 5px 8px;
+        font-size: 0.9em;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h1>Indicador de Tendências de Mercado</h1>
-    <button id="checkTrend">Verificar Tendência</button>
-    <div id="trend">Clique no botão para verificar a tendência</div>
+  <h1>Lista de Produtos</h1>
+  <form id="product-form">
+    <input type="text" id="product-name" placeholder="Digite o produto" required>
+    <input type="number" id="product-quantity" placeholder="Digite a quantidade" min="1" required>
+    <button type="submit">Adicionar</button>
+  </form>
+  <ul id="product-list"></ul>
 
-    <script>
-        document.getElementById('checkTrend').addEventListener('click', function() {
-            // Simulação de coleta de dados da API
-            // Normalmente, aqui você faria uma requisição HTTP para a API e processaria a resposta
-            let buyOrders = 72; // Simulação de ordens de compra
-            let sellOrders = 28; // Simulação de ordens de venda
+  <script>
+    // Função para carregar produtos do LocalStorage
+    function loadProducts() {
+      const products = JSON.parse(localStorage.getItem('products')) || [];
+      products.forEach(product => addProductToList(product.name, product.quantity));
+    }
 
-            let trendIndicator = document.getElementById('trend');
+    // Função para salvar produtos no LocalStorage
+    function saveProducts() {
+      const items = document.querySelectorAll('#product-list li');
+      const products = Array.from(items).map(item => {
+        const name = item.querySelector('.product-name').textContent;
+        const quantity = item.querySelector('.product-quantity').textContent;
+        return { name, quantity };
+      });
+      localStorage.setItem('products', JSON.stringify(products));
+    }
 
-            if (buyOrders > sellOrders) {
-                trendIndicator.textContent = "Tendência de Alta 🚀";
-                trendIndicator.style.color = "green";
-            } else {
-                m
+    // Função para adicionar um produto à lista visual
+    function addProductToList(name, quantity) {
+      const productList = document.getElementById('product-list');
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span><strong class="product-name">${name}</strong>: <span class="product-quantity">${quantity} Quantidade</span></span>
+        <button class="edit-btn" onclick="editProduct(this)">Editar</button>
+        <button class="delete-btn" onclick="removeProduct(this)">Remover</button>
+      `;
+      productList.appendChild(li);
+    }
+
+    // Função para editar a quantidade de um produto
+    function editProduct(button) {
+      const li = button.parentElement;
+      const quantitySpan = li.querySelector('.product-quantity');
+      const newQuantity = prompt("Digite a nova quantidade:", quantitySpan.textContent.replace(' Quantidade', ''));
+      if (newQuantity && !isNaN(newQuantity) && newQuantity > 0) {
+        quantitySpan.textContent = `${newQuantity} Quantidade`;
+        saveProducts();
+      } else {
+        alert("Quantidade inválida!");
+      }
+    }
+
+    // Função para remover um produto
+    function removeProduct(button) {
+      const li = button.parentElement;
+      li.remove();
+      saveProducts();
+    }
+
+    // Evento para adicionar produtos
+    document.getElementById('product-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('product-name').value.trim();
+      const quantity = document.getElementById('product-quantity').value;
+      if (name && quantity) {
+        addProductToList(name, quantity);
+        saveProducts();
+        document.getElementById('product-name').value = '';
+        document.getElementById('product-quantity').value = '';
+      }
+    });
+
+    // Carregar produtos ao iniciar
+    window.onload = loadProducts;
+  </script>
+</body>
+</html>
